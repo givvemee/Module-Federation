@@ -1,0 +1,16 @@
+{
+  "name": "mfe-admin-lab",
+  "private": true,
+  "packageManager": "pnpm@12.4.2",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rm -rf node_modules .turbo"
+  },
+  "devDependencies": {
+    "turbo": "^2.11.10",
+    "typescript": "^7.0.2"
+  }
+}
