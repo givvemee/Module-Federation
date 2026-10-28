@@ -14,6 +14,7 @@ packages/
   design-system/         # @mfe/design-system — 런타임 공유(singleton) 대상
   schema/                # @mfe/schema — 빌드 타임 공유 대상
 docs/
+  plan.md                # 기획서 (기준 문서)
   adr/                   # 설계 결정 기록
   ai-log.md              # 에이전트 오류 기록
   deploy.md              # Vercel 배포 연결 방법
