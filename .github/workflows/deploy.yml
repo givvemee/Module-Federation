@@ -1,0 +1,79 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      apps:
+        description: '배포할 앱 (JSON 배열, 예: ["host"]). 비우면 전체'
+        required: false
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.select.outputs.apps }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          # 앱이 의존하는 workspace 패키지와 lockfile이 바뀌어도 그 앱을 다시 배포한다.
+          filters: |
+            host:
+              - 'apps/host/**'
+              - 'packages/design-system/**'
+              - 'pnpm-lock.yaml'
+            remote-content:
+              - 'apps/remote-content/**'
+              - 'packages/design-system/**'
+              - 'pnpm-lock.yaml'
+            remote-banner-editor:
+              - 'apps/remote-banner-editor/**'
+              - 'packages/design-system/**'
+              - 'packages/schema/**'
+              - 'pnpm-lock.yaml'
+      - id: select
+        env:
+          MANUAL: ${{ github.event.inputs.apps }}
+          CHANGED: ${{ steps.filter.outputs.changes }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "apps=${MANUAL:-[\"host\",\"remote-content\",\"remote-banner-editor\"]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "apps=$CHANGED" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    needs: changes
+    if: needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != ''
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJSON(needs.changes.outputs.apps) }}
+    name: deploy (${{ matrix.app }})
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      # 시크릿 이름 예: VERCEL_PROJECT_ID_HOST, VERCEL_PROJECT_ID_REMOTE_CONTENT
+      VERCEL_PROJECT_ID: ${{ secrets[format('VERCEL_PROJECT_ID_{0}', matrix.app == 'host' && 'HOST' || matrix.app == 'remote-content' && 'REMOTE_CONTENT' || 'REMOTE_BANNER_EDITOR')] }}
+      HOST_ORIGIN: ${{ vars.HOST_ORIGIN }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          cache: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run build --filter=@mfe/${{ matrix.app }}
+      - run: node scripts/vercel-output.mjs ${{ matrix.app }}
+      - name: Deploy to Vercel
+        working-directory: apps/${{ matrix.app }}
+        run: npx --yes vercel@65.4.0 deploy --prebuilt --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
