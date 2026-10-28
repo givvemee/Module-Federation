@@ -1,3 +1,4 @@
 {
-  "remote_content": "http://localhost:4101/mf-manifest.json"
+  "remote_content": "http://localhost:4101/mf-manifest.json",
+  "remote_banner_editor": "http://localhost:4102/mf-manifest.json"
 }

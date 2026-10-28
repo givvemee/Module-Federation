@@ -21,7 +21,8 @@ function getRemoteComponent(id: string) {
 export function RemoteModule({ id }: { id: string }) {
   const Component = getRemoteComponent(id);
   return (
-    <RemoteErrorBoundary name={id}>
+    // key가 없으면 라우트가 바뀌어도 같은 경계 인스턴스가 재사용되어, 한 리모트의 에러 상태가 다른 리모트 화면까지 가린다.
+    <RemoteErrorBoundary key={id} name={id}>
       <Suspense fallback={<p>불러오는 중…</p>}>
         <Component />
       </Suspense>

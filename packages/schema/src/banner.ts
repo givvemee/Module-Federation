@@ -4,11 +4,24 @@
  */
 export type BannerFieldType = 'text' | 'textarea' | 'color' | 'url' | 'select' | 'boolean';
 
+/** 미리보기에서 이 필드 값을 어디에 쓰는지. role이 없는 필드는 폼에만 나온다. */
+export type BannerRole =
+  | 'title'
+  | 'subtitle'
+  | 'backgroundColor'
+  | 'textColor'
+  | 'ctaLabel'
+  | 'ctaUrl'
+  | 'align'
+  | 'showCta';
+
 export interface BannerFieldBase<T extends BannerFieldType> {
   key: string;
   type: T;
   label: string;
   required?: boolean;
+  role?: BannerRole;
+  defaultValue?: string | boolean;
 }
 
 export interface TextField extends BannerFieldBase<'text' | 'textarea' | 'url'> {

@@ -9,6 +9,7 @@ function Layout() {
         <strong>mfe-admin-lab</strong>
         <NavLink to="/" end>홈</NavLink>
         <NavLink to="/content">콘텐츠</NavLink>
+        <NavLink to="/banner">배너 에디터</NavLink>
       </nav>
       <main style={{ padding: 24 }}>
         <Outlet />
@@ -23,6 +24,7 @@ export function App() {
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="content/*" element={<RemoteModule id="remote_content/ContentPage" />} />
+        <Route path="banner/*" element={<RemoteModule id="remote_banner_editor/BannerEditorPage" />} />
       </Route>
     </Routes>
   );

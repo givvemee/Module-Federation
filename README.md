@@ -9,7 +9,7 @@ Module Federation 기반 마이크로 프론트엔드 운영 어드민 실험 �
 apps/
   host/                  # shell: 레이아웃, 라우팅, 리모트 로딩·에러 경계 (:4100)
   remote-content/        # 콘텐츠 관리 리모트 (:4101)
-  remote-banner-editor/  # JSON 스키마 기반 배너 에디터 리모트 (예정, :4102)
+  remote-banner-editor/  # JSON 스키마 기반 배너 에디터 리모트 (:4102)
 packages/
   design-system/         # @mfe/design-system — 런타임 공유(singleton) 대상
   schema/                # @mfe/schema — 빌드 타임 공유 대상
@@ -23,7 +23,7 @@ docs/
 ```bash
 pnpm install
 pnpm typecheck
-pnpm dev          # host http://localhost:4100, remote-content http://localhost:4101
+pnpm dev          # host :4100, remote-content :4101, remote-banner-editor :4102
 ```
 
 요구 사항: Node 22+, pnpm 12
@@ -36,7 +36,7 @@ pnpm dev          # host http://localhost:4100, remote-content http://localhost:
 - [x] 1. 번들러 선택 → ADR-001
 - [x] 2. 모노레포 뼈대 (pnpm workspace, Turborepo, design-system, schema)
 - [x] 3. host ↔ remote-content 연결, singleton 공유, 런타임 매니페스트 (TanStack Query·Zustand는 아직)
-- [ ] 4. remote-banner-editor
+- [x] 4. remote-banner-editor (JSON 스키마 → 폼·미리보기, 검증은 @mfe/schema)
 - [ ] 5. 에러 경계와 리모트 로딩 실패 대체 UI
 - [ ] 6. GitHub Actions 경로 필터 배포
 - [ ] 7. 실험 수행과 측정값 기록
